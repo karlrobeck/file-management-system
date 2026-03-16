@@ -1,0 +1,10 @@
+{% extends "shared/templates/dashboard.html.askama" %}
+{% block content %}
+  <section class="flex flex-row justify-end">
+    <button class="btn btn-primary" onclick="upload_modal.showModal()">+ Upload</button>
+  </section>
+  <section>
+    table
+  </section>
+  {% include "features/upload/partial/upload-dialog.html.askama" %}
+{% endblock content %}
