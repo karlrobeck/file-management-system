@@ -1,0 +1,9 @@
+[package]
+name = "file-management-system"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+askama = "0.15.4"
+axum = { version = "0.8.8", features = ["macros"] }
+tokio = { version = "1.50.0", features = ["full"] }
