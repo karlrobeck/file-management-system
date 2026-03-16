@@ -411,6 +411,7 @@ dependencies = [
  "askama",
  "axum",
  "chrono",
+ "serde",
  "sqlx",
  "tokio",
  "uuid",

@@ -6,7 +6,7 @@ create table users (
   storage_quota_bytes integer not null default 10737418240, -- 10 GB
   storage_used_bytes integer not null default 0,
   created_at text not null default current_timestamp,
-  updated_at text not null default current_timestamp
+  updated_at text not null default current_timestamp,
   deleted_at text
 );
 
