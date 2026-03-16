@@ -4,7 +4,14 @@
     <button class="btn btn-primary" onclick="upload_modal.showModal()">+ Upload</button>
   </section>
   <section>
-    table
+    <table class="table">
+      <thead>
+        <th>Name</th>
+        <th>Path</th>
+        <th>Size</th>
+        <th>Created at</th>
+      </thead>
+    </table>
   </section>
   {% include "features/upload/partial/upload-dialog.html.askama" %}
 {% endblock content %}
