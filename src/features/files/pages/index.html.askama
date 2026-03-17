@@ -11,6 +11,16 @@
         <th>Size</th>
         <th>Created at</th>
       </thead>
+      <tbody>
+        {% for file in self.files %}
+          <tr>
+            <td>{{ file.name }}</td>
+            <td>{{ file.storage_path }}</td>
+            <td>{{ file.size_bytes }}</td>
+            <td>{{ file.created_at }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
     </table>
   </section>
   {% include "features/upload/partial/upload-dialog.html.askama" %}

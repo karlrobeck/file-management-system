@@ -113,8 +113,6 @@ async fn sign_up_submit(
     .await
     .unwrap();
 
-    println!("New User: {:?}", new_user);
-
     trx.commit().await.unwrap();
 
     (jar, Redirect::to("/").into_response())

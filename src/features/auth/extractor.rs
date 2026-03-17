@@ -23,8 +23,6 @@ where
             .await
             .unwrap();
 
-        println!("PrivateCookieJar: {:?}", private_jar);
-
         let session_token = match private_jar.get("session-token") {
             Some(cookie) => cookie.value().to_string(),
             None => return Err(Redirect::to("/auth/sign-in")),
@@ -39,8 +37,6 @@ where
         .fetch_optional(&state.db_pool)
         .await
         .unwrap();
-
-        println!("Session: {:?}", session);
 
         if let Some(session) = session {
             Ok(session)

@@ -1,9 +1,12 @@
 <dialog id="upload_modal" class="modal">
   <div class="modal-box">
     <h3 class="text-lg font-bold">Upload file</h3>
-    <form class="flex flex-col gap-2.5" action='{{ "/upload" }}' method="post">
+    <form class="flex flex-col gap-2.5"
+          enctype="multipart/form-data"
+          action='{{ "/upload" }}'
+          method="post">
       <label for="file">File</label>
-      <input class="file-input w-full" type="file" name="file" id="file" />
+      <input multiple class="file-input w-full" type="file" name="file" id="file" />
       <button class="btn btn-primary" type="submit">Upload File</button>
     </form>
   </div>

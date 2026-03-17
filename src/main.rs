@@ -5,6 +5,7 @@ use tokio::net::TcpListener;
 use crate::features::{
     auth,
     files::{self, handler::file_page},
+    upload,
 };
 
 mod features;
@@ -29,6 +30,7 @@ async fn main() -> anyhow::Result<()> {
     // features
     router = router
         .merge(files::handler::router(&context))
+        .merge(upload::handler::router())
         .nest("/auth", auth::handler::router(&context));
 
     let router = router.with_state(context);

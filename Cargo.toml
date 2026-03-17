@@ -6,7 +6,7 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0.102"
 askama = "0.15.4"
-axum = { version = "0.8.8", features = ["macros"] }
+axum = { version = "0.8.8", features = ["macros", "multipart"] }
 axum-extra = { version = "0.12.5", features = ["cookie", "cookie-private", "cookie-signed"] }
 chrono = "0.4.44"
 serde = { version = "1.0.228", features = ["derive"] }
