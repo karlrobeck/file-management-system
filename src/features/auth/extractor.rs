@@ -1,4 +1,5 @@
 use axum::{
+    Extension, RequestPartsExt,
     extract::{FromRef, FromRequestParts},
     response::Redirect,
 };
@@ -42,5 +43,23 @@ where
         } else {
             Err(Redirect::to("/auth/sign-in"))
         }
+    }
+}
+
+pub struct Authenticated;
+
+impl<S> FromRequestParts<S> for Authenticated
+where
+    S: Send + Sync,
+{
+    type Rejection = Redirect;
+
+    async fn from_request_parts(
+        parts: &mut axum::http::request::Parts,
+        _state: &S,
+    ) -> Result<Self, Self::Rejection> {
+        let Extension(state) = parts.extract::<Extension<AppContext>>().await.unwrap();
+        let _session = Session::from_request_parts(parts, &state).await?;
+        Ok(Authenticated)
     }
 }

@@ -6,7 +6,7 @@ use axum_extra::extract::{CookieJar, PrivateCookieJar, cookie::Cookie};
 
 use crate::{
     features::auth::{
-         model::{Session, User}, request::{SignInFormRequest, SignUpFormRequest}
+         extractor::Authenticated, model::{Session, User}, request::{SignInFormRequest, SignUpFormRequest}
     },
     shared::context::AppContext,
 };
@@ -104,5 +104,5 @@ pub fn router() -> Router<AppContext> {
         .route("/sign-in", post(sign_in_submit))
         .route("/sign-up", get(sign_up_page))
         .route("/sign-up", post(sign_up_submit))
-        .route("/sign-out", post(sign_out_submit))
+        .route("/sign-out", post(sign_out_submit).layer(middleware::from_extractor::<Authenticated>()))
 }
