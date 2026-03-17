@@ -1,15 +1,12 @@
 use askama::Template;
 use axum::{
-    Form, Router,
-    extract::State,
-    response::{Html, Redirect},
-    routing::{get, post},
+    Form, Router, extract::State, middleware, response::{Html, Redirect}, routing::{get, post}
 };
+use axum_extra::extract::{CookieJar, PrivateCookieJar, cookie::Cookie};
 
 use crate::{
     features::auth::{
-        model::User,
-        request::{SignInFormRequest, SignUpFormRequest},
+         model::{Session, User}, request::{SignInFormRequest, SignUpFormRequest}
     },
     shared::context::AppContext,
 };
@@ -30,6 +27,7 @@ async fn sign_in_page() -> Html<String> {
 #[axum::debug_handler]
 async fn sign_in_submit(
     State(state): State<AppContext>,
+    jar: PrivateCookieJar,
     Form(payload): Form<SignInFormRequest>,
 ) -> Redirect {
     let current_user = sqlx::query_as::<_, User>(
@@ -44,6 +42,21 @@ async fn sign_in_submit(
     .unwrap();
 
     if let Some(user) = current_user {
+        let new_session = sqlx::query_as::<_, Session>(
+            r#"
+            insert into sessions (user_id, token, expires_at) values (?, ?, datetime('now', '+1 day')) returning *
+        "#,
+        )        
+        .bind(user.id)
+        .bind(uuid::Uuid::new_v4().to_string())
+        .fetch_one(&state.db_pool)
+        .await
+        .unwrap();
+
+        let session_cookie = Cookie::new("session-token", new_session.token);
+
+        _ = jar.add(session_cookie);
+
         return Redirect::to("/");
     }
 

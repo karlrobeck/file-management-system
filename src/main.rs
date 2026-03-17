@@ -1,4 +1,5 @@
 use axum::{Router, routing::get};
+use axum_extra::extract::cookie::Key;
 use tokio::net::TcpListener;
 
 use crate::features::{auth, files::handler::file_page};
@@ -21,7 +22,10 @@ async fn main() -> anyhow::Result<()> {
         // migrate
         sqlx::migrate!("./migrations").run(&db_pool).await?;
 
-        shared::context::AppContext { db_pool }
+        shared::context::AppContext {
+            db_pool,
+            key: Key::generate(),
+        }
     };
 
     let router = router.with_state(context);
