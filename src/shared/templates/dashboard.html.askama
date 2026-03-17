@@ -2,7 +2,9 @@
 {% block body %}
   <main class="flex flex-row h-screen">
     <aside class="w-1/4 p-2 border-r">
-      Sidebar
+      <form action='{{ "/auth/sign-out" }}' method="post">
+        <button class="btn btn-primary" type="submit">Sign Out</button>
+      </form>
     </aside>
     <article class="w-full h-full flex flex-col gap-6">
       <nav class="p-4 border-b breadcrumbs text-sm">
