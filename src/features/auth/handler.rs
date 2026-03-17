@@ -80,10 +80,16 @@ async fn sign_up_submit(
     Redirect::to("/")
 }
 
+#[axum::debug_handler]
+async fn sign_out_submit() -> Redirect {
+    Redirect::to("/auth/sign-in")
+}
+
 pub fn router() -> Router<AppContext> {
     Router::new()
         .route("/sign-in", get(sign_in_page))
         .route("/sign-in", post(sign_in_submit))
         .route("/sign-up", get(sign_up_page))
         .route("/sign-up", post(sign_up_submit))
+        .route("/sign-out", post(sign_out_submit))
 }
