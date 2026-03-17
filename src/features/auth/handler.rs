@@ -3,10 +3,10 @@ use axum::{
     Form, Router,
     extract::State,
     middleware,
-    response::{Html, Redirect},
+    response::{Html, IntoResponse, Redirect},
     routing::{get, post},
 };
-use axum_extra::extract::{CookieJar, PrivateCookieJar, cookie::Cookie};
+use axum_extra::extract::{PrivateCookieJar, cookie::Cookie};
 
 use crate::{
     features::auth::{
@@ -26,8 +26,11 @@ pub struct SignInPage;
 pub struct SignUpPage;
 
 #[axum::debug_handler]
-async fn sign_in_page() -> Html<String> {
-    Html(SignInPage.render().unwrap())
+async fn sign_in_page(_: State<AppContext>, jar: PrivateCookieJar) -> impl IntoResponse {
+    if jar.get("session-token").is_some() {
+        return (jar, Redirect::to("/").into_response());
+    }
+    (jar, Html(SignInPage.render().unwrap()).into_response())
 }
 
 #[axum::debug_handler]
@@ -35,7 +38,11 @@ async fn sign_in_submit(
     State(state): State<AppContext>,
     jar: PrivateCookieJar,
     Form(payload): Form<SignInFormRequest>,
-) -> Redirect {
+) -> (PrivateCookieJar, Redirect) {
+    if jar.get("session-token").is_some() {
+        return (jar, Redirect::to("/"));
+    }
+
     let current_user = sqlx::query_as::<_, User>(
         r#"
         select * from users where username = ? and password_hash = ?
@@ -59,26 +66,40 @@ async fn sign_in_submit(
         .await
         .unwrap();
 
-        let session_cookie = Cookie::new("session-token", new_session.token);
+        let session_cookie = Cookie::build(("session-token", new_session.token.clone()))
+            .path("/")
+            .secure(true)
+            .http_only(true);
 
-        _ = jar.add(session_cookie);
+        let updated_jar = jar.add(session_cookie);
 
-        return Redirect::to("/");
+        println!("New Session: {:?}", new_session);
+
+        return (updated_jar, Redirect::to("/"));
     }
 
-    Redirect::to("/auth/sign-in")
+    (jar, Redirect::to("/auth/sign-in"))
 }
 
 #[axum::debug_handler]
-async fn sign_up_page() -> Html<String> {
-    Html(SignUpPage.render().unwrap())
+async fn sign_up_page(_: State<AppContext>, jar: PrivateCookieJar) -> impl IntoResponse {
+    if jar.get("session-token").is_some() {
+        return (jar, Redirect::to("/").into_response());
+    }
+
+    (jar, Html(SignUpPage.render().unwrap()).into_response())
 }
 
 #[axum::debug_handler]
 async fn sign_up_submit(
     State(state): State<AppContext>,
+    jar: PrivateCookieJar,
     Form(payload): Form<SignUpFormRequest>,
-) -> Redirect {
+) -> impl IntoResponse {
+    if jar.get("session-token").is_some() {
+        return (jar, Redirect::to("/").into_response());
+    }
+
     let trx = state.db_pool.begin().await.unwrap();
 
     let new_user = sqlx::query_as::<_, User>(
@@ -96,12 +117,13 @@ async fn sign_up_submit(
 
     trx.commit().await.unwrap();
 
-    Redirect::to("/")
+    (jar, Redirect::to("/").into_response())
 }
 
 #[axum::debug_handler]
-async fn sign_out_submit() -> Redirect {
-    Redirect::to("/auth/sign-in")
+async fn sign_out_submit(_: State<AppContext>, jar: PrivateCookieJar) -> impl IntoResponse {
+    let updated_jar = jar.remove(Cookie::build("session-token").path("/").finish());
+    (updated_jar, Redirect::to("/auth/sign-in").into_response())
 }
 
 pub fn router(state: &AppContext) -> Router<AppContext> {

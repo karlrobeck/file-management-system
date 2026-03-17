@@ -23,6 +23,8 @@ where
             .await
             .unwrap();
 
+        println!("PrivateCookieJar: {:?}", private_jar);
+
         let session_token = match private_jar.get("session-token") {
             Some(cookie) => cookie.value().to_string(),
             None => return Err(Redirect::to("/auth/sign-in")),
@@ -30,13 +32,15 @@ where
 
         let session = sqlx::query_as::<_, Session>(
             r#"
-            select * from sessions where token = ? and expires_at > datetime('now')
+            select * from sessions where token = ? and expires_at > current_timestamp
         "#,
         )
         .bind(session_token)
         .fetch_optional(&state.db_pool)
         .await
         .unwrap();
+
+        println!("Session: {:?}", session);
 
         if let Some(session) = session {
             Ok(session)

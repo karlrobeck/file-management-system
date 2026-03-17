@@ -1,5 +1,5 @@
 -- Add up migration script here
-create table session (
+create table sessions (
   id integer primary key autoincrement,
   user_id integer not null,
   token text not null,
