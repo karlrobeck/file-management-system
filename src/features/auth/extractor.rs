@@ -50,16 +50,16 @@ pub struct Authenticated;
 
 impl<S> FromRequestParts<S> for Authenticated
 where
+    AppContext: FromRef<S>,
     S: Send + Sync,
 {
     type Rejection = Redirect;
 
     async fn from_request_parts(
         parts: &mut axum::http::request::Parts,
-        _state: &S,
+        state: &S,
     ) -> Result<Self, Self::Rejection> {
-        let Extension(state) = parts.extract::<Extension<AppContext>>().await.unwrap();
-        let _session = Session::from_request_parts(parts, &state).await?;
+        let _session = Session::from_request_parts(parts, state).await?;
         Ok(Authenticated)
     }
 }

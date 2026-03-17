@@ -2,7 +2,10 @@ use axum::{Router, routing::get};
 use axum_extra::extract::cookie::Key;
 use tokio::net::TcpListener;
 
-use crate::features::{auth, files::handler::file_page};
+use crate::features::{
+    auth,
+    files::{self, handler::file_page},
+};
 
 mod features;
 mod shared;
@@ -10,11 +13,6 @@ mod shared;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let mut router = Router::new();
-
-    // features
-    router = router
-        .route("/", get(file_page))
-        .nest("/auth", auth::handler::router());
 
     let context = {
         let db_pool = sqlx::SqlitePool::connect(env!("DATABASE_URL")).await?;
@@ -27,6 +25,11 @@ async fn main() -> anyhow::Result<()> {
             key: Key::generate(),
         }
     };
+
+    // features
+    router = router
+        .merge(files::handler::router(&context))
+        .nest("/auth", auth::handler::router(&context));
 
     let router = router.with_state(context);
 

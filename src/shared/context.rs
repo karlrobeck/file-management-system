@@ -1,4 +1,4 @@
-use axum::extract::{FromRef, FromRequestParts};
+use axum::extract::{FromRef, FromRequest};
 use axum_extra::extract::cookie::Key;
 
 #[derive(Clone)]
@@ -7,18 +7,22 @@ pub struct AppContext {
     pub key: Key,
 }
 
-impl<S> FromRequestParts<S> for AppContext
+impl<S> FromRequest<S> for AppContext
 where
     Self: FromRef<S>,
     S: Send + Sync,
 {
     type Rejection = ();
 
-    async fn from_request_parts(
-        _parts: &mut axum::http::request::Parts,
+    async fn from_request(
+        mut req: axum::extract::Request,
         state: &S,
     ) -> Result<Self, Self::Rejection> {
-        Ok(Self::from_ref(state))
+        let state = AppContext::from_ref(state);
+
+        req.extensions_mut().insert(state.clone());
+
+        Ok(state)
     }
 }
 

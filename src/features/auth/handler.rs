@@ -1,12 +1,18 @@
 use askama::Template;
 use axum::{
-    Form, Router, extract::State, middleware, response::{Html, Redirect}, routing::{get, post}
+    Form, Router,
+    extract::State,
+    middleware,
+    response::{Html, Redirect},
+    routing::{get, post},
 };
 use axum_extra::extract::{CookieJar, PrivateCookieJar, cookie::Cookie};
 
 use crate::{
     features::auth::{
-         extractor::Authenticated, model::{Session, User}, request::{SignInFormRequest, SignUpFormRequest}
+        extractor::Authenticated,
+        model::{Session, User},
+        request::{SignInFormRequest, SignUpFormRequest},
     },
     shared::context::AppContext,
 };
@@ -98,11 +104,16 @@ async fn sign_out_submit() -> Redirect {
     Redirect::to("/auth/sign-in")
 }
 
-pub fn router() -> Router<AppContext> {
+pub fn router(state: &AppContext) -> Router<AppContext> {
     Router::new()
         .route("/sign-in", get(sign_in_page))
         .route("/sign-in", post(sign_in_submit))
         .route("/sign-up", get(sign_up_page))
         .route("/sign-up", post(sign_up_submit))
-        .route("/sign-out", post(sign_out_submit).layer(middleware::from_extractor::<Authenticated>()))
+        .route(
+            "/sign-out",
+            post(sign_out_submit).layer(middleware::from_extractor_with_state::<Authenticated, _>(
+                state.clone(),
+            )),
+        )
 }
