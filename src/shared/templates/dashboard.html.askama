@@ -1,7 +1,25 @@
 {% extends "shared/templates/base.html.askama" %}
 {% block body %}
   <main class="flex flex-row h-screen">
-    <article class="w-full h-full flex flex-col gap-6">
+    <aside class="flex flex-col justify-end h-full base-200">
+      <form action='{{ "/auth/sign-out" }}' method="post">
+        <button class="btn btn-ghost tooltip tooltip-right" data-tip="Sign out">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               stroke-linecap="round"
+               stroke-linejoin="round"
+               class="lucide lucide-log-out-icon lucide-log-out size-4">
+            <path d="m16 17 5-5-5-5" />
+            <path d="M21 12H9" />
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          </svg>
+        </button>
+      </form>
+    </aside>
+    <article class="w-full h-full flex flex-col gap-6 overflow-y-auto container mx-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {% block dashboard_header %}
       {% endblock dashboard_header %}
       <div class="p-4">
