@@ -6,17 +6,21 @@
   <section>
     <table class="table">
       <thead>
+        <th>Folder ID</th>
         <th>Name</th>
         <th>Path</th>
         <th>Size</th>
+        <th>MIME Type</th>
         <th>Created at</th>
       </thead>
       <tbody>
         {% for file in self.files %}
           <tr>
+            <td>{{ file.folder_id.unwrap_or_default() }}</td>
             <td>{{ file.name }}</td>
             <td>{{ file.storage_path }}</td>
             <td>{{ file.size_bytes }}</td>
+            <td>{{ file.mime_type }}</td>
             <td>{{ file.created_at }}</td>
           </tr>
         {% endfor %}
