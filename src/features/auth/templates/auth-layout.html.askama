@@ -1,0 +1,9 @@
+{% extends "shared/templates/base.html.askama" %}
+{% block body %}
+  <main class="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+    <article class="w-full max-w-sm">
+      {% block auth_content %}
+      {% endblock auth_content %}
+    </article>
+  </main>
+{% endblock body %}

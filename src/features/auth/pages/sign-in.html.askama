@@ -1,15 +1,26 @@
-{% extends "shared/templates/base.html.askama" %}
-{% block body %}
-  <form method="post">
-    <fieldset class="fieldset">
-      {# Username Field #}
-      <label for="username" class="label">Username</label>
-      <input class="input w-full" type="text" name="username" id="username" />
-      {# Password Field #}
-      <label for="password" class="label">Password</label>
-      <input class="input w-full" type="password" name="password" id="password" />
-      {# Submit Button #}
-      <button type="submit" class="btn btn-primary">Sign In</button>
-    </fieldset>
-  </form>
-{% endblock body %}
+{% extends "features/auth/templates/auth-layout.html.askama" %}
+{% block auth_content %}
+  <div class="flex flex-col gap-6">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="card-title">Sign In</h2>
+        <p>Welcome back! Please enter your credentials.</p>
+        <form method="post">
+          <fieldset class="fieldset">
+            {# Username Field #}
+            <label for="username" class="label">Username</label>
+            <input class="input w-full" type="text" name="username" id="username" />
+            {# Password Field #}
+            <label for="password" class="label">Password</label>
+            <input class="input w-full" type="password" name="password" id="password" />
+            {# Submit Button #}
+            <button type="submit" class="btn btn-primary">Sign In</button>
+          </fieldset>
+        </form>
+        <span class="text-center text-sm text-neutral">Don't have an account?
+          <a href='{{ "/auth/sign-up" }}' class="link">Sign up</a>
+        </span>
+      </div>
+    </div>
+  </div>
+{% endblock auth_content %}
